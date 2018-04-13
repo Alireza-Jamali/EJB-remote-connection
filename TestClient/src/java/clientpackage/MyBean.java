@@ -1,14 +1,17 @@
 package clientpackage;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.RequestScoped;
+import javax.naming.NamingException;
 
 /**
  *
  * @author AezA
  */
 @ManagedBean
-@SessionScoped
+@RequestScoped
 public class MyBean {
     
     String msg;
@@ -35,9 +38,11 @@ public class MyBean {
         TestLocalConnection tlc = new TestLocalConnection();
         try {
             msg = tlc.connect();
-        } catch (MyException e) {
+        } catch (Exception e) {
             msg = e.getMessage();
-            err = e.getExplanation();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            err = sw.toString();
         }        
     }
 }

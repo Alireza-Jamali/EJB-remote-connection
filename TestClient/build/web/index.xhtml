@@ -3,13 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html">
     <h:head>
-        <title>Facelet Title</title>
+        <title>EJB Remote</title>
     </h:head>
     <h:body>
         <h:form>
-            <h:commandButton value="click" actionListener="#{myBean.click()}"/><br />
+            <h:commandButton value="connect" actionListener="#{myBean.click()}"/><br />
             <h:inputText value="#{myBean.msg}" size="80"/><br />  
-            <h:inputTextarea value="#{myBean.err}" cols="100" rows="50"/>
+            <h:inputTextarea value="#{myBean.err}" cols="120" rows="50"/>
         </h:form>
     </h:body>
 </html>
