@@ -1,2 +1,5 @@
 ./EJBConnectionTest/EJBConnectionTest-war
 
+/EJBConnectionTest/EJBConnectionTest-ejb/dist/
+/EJBConnectionTest/EJBConnectionTest-war/dist/
+/TestClient/dist/

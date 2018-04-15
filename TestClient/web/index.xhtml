@@ -1,15 +1,26 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
     <h:head>
         <title>EJB Remote</title>
     </h:head>
     <h:body>
         <h:form>
-            <h:commandButton value="connect" actionListener="#{myBean.click()}"/><br />
-            <h:inputText value="#{myBean.msg}" size="80"/><br />  
-            <h:inputTextarea value="#{myBean.err}" cols="120" rows="50"/>
+            <h:commandButton value="connect" actionListener="#{myBean.click(radioBtn.value, ip.value)}"/>
+            
+            
+            <h:selectOneRadio binding="#{radioBtn}" value="local">
+                <f:selectItem itemValue="local" itemLabel="local" />
+                <f:selectItem itemValue="remote" itemLabel="remote" />
+            </h:selectOneRadio>
+            server ip address: <h:inputText value="localhost" binding="#{ip}" size="20"/> 
+            <br />
+            <br />
+            <br />
+            <h:inputText readonly="true" value="#{myBean.msg}" size="80"/><br />  
+            <h:inputTextarea readonly="true" value="#{myBean.err}" cols="150" rows="50"/>
         </h:form>
     </h:body>
 </html>

@@ -8,8 +8,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -19,10 +17,24 @@ import messagepackage.MyInterface;
  *
  * @author AezA
  */
-public class TestLocalConnection {
+public class TestConnection {
 
-    private final String SESSION_BEAN_MAPPED_NAME = "msg";
-    private final String SERVER_IP_ADDRESS = "localhost";//change to server IP address
+    private final String SESSION_BEAN_MAPPED_NAME;
+    private final String SERVER_IP_ADDRESS;//change to server IP address
+
+    public TestConnection(String radioBtn, String serverIp) {
+        switch (radioBtn) {
+            default:
+                SESSION_BEAN_MAPPED_NAME = "msg";
+                break;
+            case "remote":
+                SESSION_BEAN_MAPPED_NAME = "java:global/EJBConnectionTest/EJBConnectionTest-ejb/TheMessage!messagepackage.MyInterface";
+//                SESSION_BEAN_MAPPED_NAME = "java:global/EJBConnectionTest/EJBConnectionTest-ejb/TheMessage";
+//                SESSION_BEAN_MAPPED_NAME = "msg#messagepackage.MyInterface";
+                break;
+        }
+        SERVER_IP_ADDRESS = serverIp == null || serverIp.isEmpty() ? "localhost" : serverIp;
+    }
 
     String connect() throws NamingException, TimeoutException {
 
@@ -33,6 +45,7 @@ public class TestLocalConnection {
             props.put("java.naming.factory.state", "com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl");
             props.put("org.omg.CORBA.ORBInitialHost", SERVER_IP_ADDRESS);
             props.put("org.omg.CORBA.ORBInitialPort", "3700");
+            
         } catch (NullPointerException e) {
             e.printStackTrace();
             return "props value is null";
@@ -43,25 +56,33 @@ public class TestLocalConnection {
 
         try {
             ctx = new InitialContext(props);
-            MyInterface mi = lookupWithTimeup(ctx, 5);
+            MyInterface mi = lookupWithTimeup(ctx, 30);//time up
+            if (mi == null) {
+                throw exx;
+            }
             msg = mi.message();
         } catch (TimeoutException ex) {
-            throw new TimeoutException("time up!" + " connection failed to session bean: " + SESSION_BEAN_MAPPED_NAME + " ip: " + SERVER_IP_ADDRESS );
+            throw new TimeoutException("time up!" + " connection failed to session bean: " + SESSION_BEAN_MAPPED_NAME + " ip: " + SERVER_IP_ADDRESS);
         } catch (NamingException ex) {
-            throw new NamingException("could not connect!");
+            throw ex;
         }
         return msg;
 
     }
 
     MyInterface mi;
+    NamingException exx;
 
     private MyInterface lookupWithTimeup(Context ctx, int timeup) throws NamingException, TimeoutException {
         ExecutorService executor = Executors.newCachedThreadPool();
         Callable<String> call = new Callable<String>() {
             @Override
-            public String call() throws Exception {
-                mi = (MyInterface) ctx.lookup(SESSION_BEAN_MAPPED_NAME);
+            public String call() throws NamingException {
+                try {
+                    mi = (MyInterface) ctx.lookup(SESSION_BEAN_MAPPED_NAME);
+                } catch (NamingException ex) {
+                    exx = ex;
+                }
                 return "ok";
             }
         };

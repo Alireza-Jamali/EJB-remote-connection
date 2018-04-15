@@ -33,16 +33,19 @@ public class MyBean {
         this.msg = msg;
     }
 
-    public void click() {
-    
-        TestLocalConnection tlc = new TestLocalConnection();
+    public void click(String radioBtn, String ip) {
+
+        TestConnection tlc = new TestConnection(radioBtn, ip);
         try {
             msg = tlc.connect();
         } catch (Exception e) {
-            msg = e.getMessage();
+            msg = "could not connect!";
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
-            err = sw.toString();
+            if (e instanceof NamingException) {
+                err = ((NamingException) e).getExplanation() + "\n\n";
+            }
+            err +=  "\n" + sw.toString();
         }        
     }
 }
